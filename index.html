@@ -256,25 +256,24 @@
         function getDailyQuote() {
             const today = getTodayDateString();
             
-            // For Claude.ai preview, use in-memory storage
-            // When using in Notion, uncomment the localStorage lines below
+            // Check if we already have a quote for today
+            const stored = localStorage.getItem('dailyQuote');
+            const storedData = stored ? JSON.parse(stored) : null;
             
-            // const stored = localStorage.getItem('dailyQuote');
-            // const storedData = stored ? JSON.parse(stored) : null;
-            
-            // if (storedData && storedData.date === today) {
-            //     return storedData.quote;
-            // }
+            if (storedData && storedData.date === today) {
+                return storedData.quote;
+            }
             
             // Generate a consistent quote for today based on date
             const dateNumber = new Date(today).getTime();
             const quoteIndex = Math.floor((dateNumber / (1000 * 60 * 60 * 24)) % quotes.length);
             const quote = quotes[quoteIndex];
             
-            // localStorage.setItem('dailyQuote', JSON.stringify({
-            //     date: today,
-            //     quote: quote
-            // }));
+            // Save today's quote
+            localStorage.setItem('dailyQuote', JSON.stringify({
+                date: today,
+                quote: quote
+            }));
             
             return quote;
         }
