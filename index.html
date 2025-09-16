@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Quote Widget</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #f8f6f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .quote-container {
+            background: #fefefe;
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0);
+            background-size: 20px 20px;
+            padding: 50px 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            position: relative;
+        }
+        
+        .quote-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 48%, rgba(0,0,0,0.02) 50%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(0,0,0,0.02) 50%, transparent 52%);
+            background-size: 3px 3px;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        .quote-icon {
+            display: none;
+        }
+        
+        .quote-text {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            color: #2c2c2c;
+            margin-bottom: 30px;
+            font-style: italic;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+        
+        .quote-author {
+            font-size: 1rem;
+            color: #555;
+            font-weight: 500;
+            margin-bottom: 25px;
+            font-style: normal;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        
+        .quote-author::before {
+            content: "— ";
+        }
+        
+        .date-indicator {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+            font-style: normal;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        
+        .refresh-btn {
+            background: #2c2c2c;
+            color: #fefefe;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+            font-family: inherit;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .refresh-btn:hover {
+            background: #444;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        @media (max-width: 600px) {
+            .quote-container {
+                padding: 40px 25px;
+                margin: 10px;
+            }
+            
+            .quote-text {
+                font-size: 1.2rem;
+                line-height: 1.7;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quote-container">
+        <div class="quote-icon">💭</div>
+        <div class="quote-text" id="quoteText"></div>
+        <div class="quote-author" id="quoteAuthor"></div>
+        <div class="date-indicator" id="dateIndicator"></div>
+        <button class="refresh-btn" onclick="showNewQuote()">New Quote</button>
+    </div>
+
+    <script>
+        const quotes = [
+            {
+                text: "The only way to do great work is to love what you do.",
+                author: "Steve Jobs"
+            },
+            {
+                text: "Innovation distinguishes between a leader and a follower.",
+                author: "Steve Jobs"
+            },
+            {
+                text: "Life is what happens to you while you're busy making other plans.",
+                author: "John Lennon"
+            },
+            {
+                text: "The future belongs to those who believe in the beauty of their dreams.",
+                author: "Eleanor Roosevelt"
+            },
+            {
+                text: "It is during our darkest moments that we must focus to see the light.",
+                author: "Aristotle"
+            },
+            {
+                text: "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                author: "Winston Churchill"
+            },
+            {
+                text: "The only impossible journey is the one you never begin.",
+                author: "Tony Robbins"
+            },
+            {
+                text: "In the middle of difficulty lies opportunity.",
+                author: "Albert Einstein"
+            },
+            {
+                text: "Believe you can and you're halfway there.",
+                author: "Theodore Roosevelt"
+            },
+            {
+                text: "The only person you are destined to become is the person you decide to be.",
+                author: "Ralph Waldo Emerson"
+            },
+            {
+                text: "Don't watch the clock; do what it does. Keep going.",
+                author: "Sam Levenson"
+            },
+            {
+                text: "Whether you think you can or you think you can't, you're right.",
+                author: "Henry Ford"
+            },
+            {
+                text: "The best time to plant a tree was 20 years ago. The second best time is now.",
+                author: "Chinese Proverb"
+            },
+            {
+                text: "Your limitation—it's only your imagination.",
+                author: "Unknown"
+            },
+            {
+                text: "Great things never come from comfort zones.",
+                author: "Unknown"
+            },
+            {
+                text: "Dream it. Wish it. Do it.",
+                author: "Unknown"
+            },
+            {
+                text: "Success doesn't just find you. You have to go out and get it.",
+                author: "Unknown"
+            },
+            {
+                text: "The harder you work for something, the greater you'll feel when you achieve it.",
+                author: "Unknown"
+            },
+            {
+                text: "Dream bigger. Do bigger.",
+                author: "Unknown"
+            },
+            {
+                text: "Don't stop when you're tired. Stop when you're done.",
+                author: "Unknown"
+            },
+            {
+                text: "Wake up with determination. Go to bed with satisfaction.",
+                author: "Unknown"
+            },
+            {
+                text: "Do something today that your future self will thank you for.",
+                author: "Sean Patrick Flanery"
+            },
+            {
+                text: "Little things make big days.",
+                author: "Unknown"
+            },
+            {
+                text: "It's going to be hard, but hard does not mean impossible.",
+                author: "Unknown"
+            },
+            {
+                text: "Don't wait for opportunity. Create it.",
+                author: "Unknown"
+            },
+            {
+                text: "Sometimes we're tested not to show our weaknesses, but to discover our strengths.",
+                author: "Unknown"
+            },
+            {
+                text: "The key to success is to focus on goals, not obstacles.",
+                author: "Unknown"
+            },
+            {
+                text: "Dream it. Believe it. Build it.",
+                author: "Unknown"
+            }
+        ];
+
+        function getTodayDateString() {
+            const today = new Date();
+            return today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+
+        function getDailyQuote() {
+            const today = getTodayDateString();
+            
+            // For Claude.ai preview, use in-memory storage
+            // When using in Notion, uncomment the localStorage lines below
+            
+            // const stored = localStorage.getItem('dailyQuote');
+            // const storedData = stored ? JSON.parse(stored) : null;
+            
+            // if (storedData && storedData.date === today) {
+            //     return storedData.quote;
+            // }
+            
+            // Generate a consistent quote for today based on date
+            const dateNumber = new Date(today).getTime();
+            const quoteIndex = Math.floor((dateNumber / (1000 * 60 * 60 * 24)) % quotes.length);
+            const quote = quotes[quoteIndex];
+            
+            // localStorage.setItem('dailyQuote', JSON.stringify({
+            //     date: today,
+            //     quote: quote
+            // }));
+            
+            return quote;
+        }
+
+        function showNewQuote() {
+            // Show a random quote when refresh button is clicked
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            displayQuote(quotes[randomIndex]);
+        }
+
+        function displayQuote(quote) {
+            document.getElementById('quoteText').textContent = quote.text;
+            document.getElementById('quoteAuthor').textContent = quote.author;
+            
+            const today = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('dateIndicator').textContent = 
+                'Quote for ' + today.toLocaleDateString('en-US', options);
+        }
+
+        // Initialize with today's quote
+        window.onload = function() {
+            const dailyQuote = getDailyQuote();
+            displayQuote(dailyQuote);
+        };
+    </script>
+</body>
+</html>
